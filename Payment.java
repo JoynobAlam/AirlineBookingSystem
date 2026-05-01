@@ -15,7 +15,7 @@ class Payment {
         else if(cabinType.equalsIgnoreCase("Business")){
             System.out.println("Payment successful: " + businessAmount + " taka");
         }
-        else if(cabinType.equalsIgnoreCase("Premium")){
+        else if(cabinType.equalsIgnoreCase("Premium Economy")){
             System.out.println("Payment successful: " + preEcoAmount + " taka");
         }
         else if(cabinType.equalsIgnoreCase("Economy")){

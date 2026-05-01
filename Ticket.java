@@ -3,10 +3,10 @@ class Ticket {
     String passengerName;
     String cabinType;
 
-    Ticket(int ticketId, String passengeName, String cabinType){
-        this.ticketId=ticketId;
-        this.passengerName=passengeName;
-        this.cabinType=cabinType;
+    Ticket(int ticketId, String passengerName, String cabinType){
+    this.ticketId = ticketId;
+    this.passengerName = passengerName;
+    this.cabinType = cabinType;
     }
     void showTicket(){
         System.out.println("Ticket ID: "+ticketId);

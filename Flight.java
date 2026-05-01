@@ -13,7 +13,7 @@ class Flight {
     Flight(int flightId, Route route,
            Cabin firstClass,
            Cabin businessClass,
-           Cabin premiumEconomy,
+           Cabin premiumEconomy,       // flight will contain cabin object
            Cabin economy) {
 
         this.flightId = flightId;

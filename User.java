@@ -1,8 +1,8 @@
 class User {
 
-    int id;
+    String id;
     String firstname,lastname, password, birthdate;
-    User(int id, String firstname, String lastname,String birthdate, String password){
+    User(String id, String firstname, String lastname,String birthdate, String password){
         this.id=id;
         this.firstname=firstname;
         this.lastname=lastname;
