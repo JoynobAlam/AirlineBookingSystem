@@ -27,7 +27,7 @@ class Flight {
         this.totalSeats =
                 (firstClass.totalSeats +
                 businessClass.totalSeats +     // class field
-                premiumEconomy.totalSeats +
+                premiumEconomy.totalSeats +   
                 economy.totalSeats);
     }
 
@@ -45,6 +45,11 @@ class Flight {
             economy.availableSeats);
 
         System.out.println("Total Seats are: "+totalSeats);
+
+        int tavailableSeats=(firstClass.availableSeats+businessClass.availableSeats
+            +premiumEconomy.availableSeats+economy.availableSeats);
+        
+        System.out.println("Total available seats: "+tavailableSeats);// improved
         
     }
 }    
