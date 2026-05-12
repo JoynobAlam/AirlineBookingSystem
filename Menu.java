@@ -15,10 +15,10 @@ class Menu {
     }
     void showMainOptions() {
         System.out.println("..............Airline Menu...............");
-        System.out.println("1. View Available Flights"); // Brain: Run flight.displayFlight()
-        System.out.println("2. Book a New Ticket");       // Brain: Run booking.bookTicket()
-        System.out.println("3. Cancel a Ticket");         // Brain: Run cancel.cancelTicket()
-        System.out.println("4. Check Food Menu");         // Brain: Run menu.showFoodMenu()
+        System.out.println("1. View Available Flights"); 
+        System.out.println("2. Book a New Ticket");       
+        System.out.println("3. Cancel a Ticket");         
+        System.out.println("4. Check Food Menu");         
         System.out.println("5. Exit");
         System.out.print("Enter your choice: ");
     }

@@ -20,8 +20,9 @@ class Booking {
         valid = false;
     }
 
-    if(!valid) return null;
-
+    if(!valid){ 
+        return null;
+    }
     return new Ticket(ticketId, name, cabinType);
     }
 }
