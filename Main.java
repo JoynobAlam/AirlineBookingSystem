@@ -18,6 +18,9 @@ public class Main {
         Menu menu = new Menu("All", "Chicken Rice", "Available");
         Staff staff = new Staff(1, "Admin", "Manager", "Airport");
 
+        staff.showStaff(); // improved
+        menu.showMenu();   // improved
+
         Ticket ticket = null;
 
         // ================= USER REGISTRATION =================
@@ -40,6 +43,8 @@ public class Main {
 
         User user = new User(id, fname, lname, bdate, pass);
         file.saveUser(id, fname, lname, bdate, pass);//*
+
+        user.showUser();// improved
 
         // ================= MODE SELECTION =================
         while (true) {
