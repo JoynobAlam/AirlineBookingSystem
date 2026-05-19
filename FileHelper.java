@@ -13,7 +13,8 @@ class FileHelper {
 
             System.out.println("User saved to file.");
 
-        } catch (Exception e) {
+        } 
+        catch (Exception e) {
             System.out.println("Error saving data.");
         }
     }
