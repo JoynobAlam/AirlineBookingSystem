@@ -164,7 +164,7 @@ public class MainGui {
                     this.activeTicket = booking.bookTicket(1001, currentUser.firstname, f, logicClass);
                     
                     if (this.activeTicket != null) {
-                        this.lastBookedClass = selectedClass; // Save for showCancel
+                        this.lastBookedClass = selectedClass;
                         db.saveFlights();
                         JOptionPane.showMessageDialog(frame, "Payment Successful! " + selectedClass + " is confirmed.");
                         showRoyalHome(); 
@@ -238,7 +238,7 @@ public class MainGui {
                 JOptionPane.showMessageDialog(frame, "Please enter your details.");
                 return;
             }
-            // This stores the user globally so 'showBooking' knows you are logged in
+            
             currentUser = new User(idF.getText(), nameF.getText(), "User", dobF.getText().trim(), passF.getText());
             fileHelper.saveUser(idF.getText(), nameF.getText(), "User", dobF.getText().trim(), passF.getText());
             

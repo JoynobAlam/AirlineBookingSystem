@@ -1,5 +1,5 @@
 class Cabin {
-    String cabinName; // determines which type of cabin it is e.g first cls
+    String cabinName; 
     int totalSeats;
     int availableSeats;
     

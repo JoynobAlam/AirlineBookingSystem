@@ -49,7 +49,7 @@ class FlightDatabase {
         }
     }
 
-    // Save flights to file
+    
     void saveFlights() {
         try {
             FileWriter fw = new FileWriter("flights.txt");
@@ -75,7 +75,7 @@ class FlightDatabase {
         }
     }
 
-    // Find flight by route
+    
     Flight findFlight(String source, String dest) {
 
         for (int i = 0; i < count; i++) {  //* 

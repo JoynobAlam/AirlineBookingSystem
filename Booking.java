@@ -26,4 +26,3 @@ class Booking {
     return new Ticket(ticketId, name, cabinType);
     }
 }
-// bookTicket will return a ticket object 

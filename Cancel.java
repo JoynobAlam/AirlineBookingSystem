@@ -27,7 +27,7 @@ class Cancel {
         }
         else {
             System.out.println("Invalid cabin type. No refund possible.");
-            return; // This stops the method right here so the refund math never happens
+            return; 
         }
         
         double refundAmount=price*0.80;

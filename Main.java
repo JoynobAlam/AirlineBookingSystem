@@ -18,8 +18,8 @@ public class Main {
         Menu menu = new Menu("All", "Chicken Rice", "Available");
         Staff staff = new Staff(1, "Admin", "Manager", "Airport");
 
-        staff.showStaff(); // improved
-        menu.showMenu();   // improved
+        staff.showStaff(); 
+        menu.showMenu();   
 
         Ticket ticket = null;
 
@@ -44,7 +44,7 @@ public class Main {
         User user = new User(id, fname, lname, bdate, pass);
         file.saveUser(id, fname, lname, bdate, pass);//*
 
-        user.showUser();// improved
+        user.showUser();
 
         // ================= MODE SELECTION =================
         while (true) {
@@ -146,7 +146,7 @@ public class Main {
                     // VIEW FLIGHTS
                     if (choice == 1) {
 
-                        for (int i = 0; i < db.count; i++) { // runs many times to show exact numbers of flight
+                        for (int i = 0; i < db.count; i++) { 
                             db.flights[i].displayFlight();
                         }
                     }
