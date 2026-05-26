@@ -11,6 +11,11 @@ public class MainGui {
     private String lastBookedClass = "";
     private User currentUser = null;
 
+   
+   
+
+    private java.util.ArrayList<Ticket> myTickets = new java.util.ArrayList<>();
+
     private JFrame frame = new JFrame("Joy Airlines - Royal Service");
     
     // Royal Palette
@@ -41,8 +46,10 @@ public class MainGui {
         navBar.add(logo);
         navBar.add(Box.createHorizontalStrut(30));
 
+       
         navBar.add(createRoyalMenu("SEARCH ROUTES", e -> showFlightSearch()));
-        navBar.add(createRoyalMenu("BOOK FLIGHT", e -> showBooking()));
+        navBar.add(createRoyalMenu("BOOK FLIGHT", e -> showAllFlights()));
+
         navBar.add(createRoyalMenu("MY RESERVATIONS", e -> showCancel()));
         
         navBar.add(Box.createHorizontalGlue());
@@ -75,150 +82,219 @@ public class MainGui {
         updateContent(hero);
     }
 
-    
-    public void showFlightSearch() {
-        JPanel p = createRoyalPanel("FLIGHT INQUIRY");
-        JTextField sF = createRoyalField(); 
-        JTextField dF = createRoyalField();
-        p.add(createLabel("Departure:"));
-        p.add(sF);
-        p.add(createLabel("Arrival:")); 
-        p.add(dF);
 
-        JButton btn = createGoldButton("CHECK DETAILS");
-        btn.addActionListener(e -> {
-            Flight f = db.findFlight(sF.getText().trim(), dF.getText().trim());
-            if (f != null) {
+    public void showAllFlights() {
+    
+    JPanel p = createRoyalPanel("BOOK YOUR FLIGHT");
+
+    JTextField srcField = createRoyalField();
+    JTextField destField = createRoyalField();
+    JButton findBtn = createGoldButton("FIND FLIGHTS");
+
+    p.add(createLabel("Source:")); p.add(srcField);
+    p.add(createLabel("Destination:")); p.add(destField);
+    p.add(findBtn);
+
+
+    findBtn.addActionListener(e -> {
+    db.loadFlights();
+    String s = srcField.getText().trim();
+    String d = destField.getText().trim();
+
+    p.removeAll(); 
+    p.add(createLabel("Source:")); p.add(srcField);
+    p.add(createLabel("Destination:")); p.add(destField);
+    p.add(findBtn);
+
+    
+    java.util.Set<String> addedFlights = new java.util.HashSet<>();
+
+    for (Flight f : db.flights) {
+        if (f.route.source.trim().equalsIgnoreCase(s) && 
+            f.route.destination.trim().equalsIgnoreCase(d)) {
+            
+            
+            if (!addedFlights.contains(String.valueOf(f.flightId))) {
+                JButton b = createGoldButton("Flight #" + f.flightId + " | Price: " + f.ecoPrice);
+                b.addActionListener(act -> showBooking(f));
+                p.add(b);
                 
-                String details = "--- JOY AIRLINES ROUTE DETAILS ---\n" +
-                 "Route: " + f.route.source + " to " + f.route.destination + "\n" +
-                 "Total Available Seats: " + (f.firstClass.availableSeats + f.businessClass.availableSeats + 
-                  f.premiumEconomy.availableSeats + f.economy.availableSeats) + "\n\n" +
-                 "--- FARE CHART (PER PERSON) ---\n" +
-                 "1. Economy: 6000 Taka\n" +
-                 "2. Premium Economy: 8500 Taka\n" +
-                 "3. Business: 12000 Taka\n" +
-                 "4. First Class: 25000 Taka";
-                JOptionPane.showMessageDialog(frame, details);
-            } else {
-                JOptionPane.showMessageDialog(frame, "No routes found.");
+                addedFlights.add(String.valueOf(f.flightId));
             }
-        });
-        p.add(btn);
-        updateContent(p);
+        }
     }
+    p.revalidate();
+    p.repaint();
+    });
+
+    updateContent(p);
+}
+
+
+    public void showFlightSearch() {
+    db.loadFlights();
+    JPanel p = createRoyalPanel("ALL AVAILABLE FLIGHTS");
 
     
-    public void showBooking() {
-        if (currentUser == null) {
-            JOptionPane.showMessageDialog(frame, "Please Sign In to Joy Airlines first.");
-            showRegistration();
-            return;
-        }
+    p.removeAll();
 
-        JPanel p = createRoyalPanel("RESERVE YOUR SEAT");
-        JTextField sF = createRoyalField(); 
-        JTextField dF = createRoyalField();
+    
+    java.util.Set<String> addedFlights = new java.util.HashSet<String>();
+
+    
+    java.util.List<Flight> allFlights = new java.util.ArrayList<Flight>();
+    for (Flight f : db.flights) { allFlights.add(f); }
+    allFlights.sort((f1, f2) -> Double.compare(f1.ecoPrice, f2.ecoPrice));
+
+    
+    for (Flight f : allFlights) {
+        String fId = String.valueOf(f.flightId);
         
-        String[] types = {"Economy", "Premium Economy", "Business", "First Class"};
-        JComboBox<String> classBox = new JComboBox<>(types);
-
-        p.add(createLabel("Departure:")); 
-        p.add(sF);
-        p.add(createLabel("Arrival:")); 
-        p.add(dF);
-        p.add(createLabel("Class:")); 
-        p.add(classBox);
-
-        JButton btn = createGoldButton("PROCEED TO PAYMENT");
-        btn.addActionListener(e -> {
-            Flight f = db.findFlight(sF.getText().trim(), dF.getText().trim());
-            String selectedClass = (String)classBox.getSelectedItem();
-
-            if (f != null) {
-                int ticketPrice = 0;
-                String logicClass = "Economy"; 
-
-                if (selectedClass.equalsIgnoreCase("First Class")) {
-                    ticketPrice = 25000;
-                    logicClass = "Business"; 
-                } else if (selectedClass.equalsIgnoreCase("Business")) {
-                    ticketPrice = 12000;
-                    logicClass = "Business";
-                } else if (selectedClass.equalsIgnoreCase("Premium Economy")) {
-                    ticketPrice = 8500;
-                    logicClass = "Economy";
-                } else {
-                    ticketPrice = 6000;
-                    logicClass = "Economy";
-                }
-
-                int confirm = JOptionPane.showConfirmDialog(frame, 
-                    "JOY AIRLINES - OFFICIAL RECEIPT\n" +
-                    "Passenger: " + currentUser.firstname + "\n" +
-                    "Class: " + selectedClass + "\n" +
-                    "Amount Due: " + ticketPrice + " Taka", 
-                    "Secure Payment Gateway", JOptionPane.YES_NO_OPTION);
+        
+        if (!addedFlights.contains(fId)) {
+            boolean isCheapest = (f == allFlights.get(0));
+            String labelText = (isCheapest ? "⭐ CHEAPEST: " : "") + 
+                               "Flight #" + f.flightId + " | Price: " + f.ecoPrice + " Taka";
+            
+            JButton b = createGoldButton(labelText);
+            b.addActionListener(e -> {
+                int choice = JOptionPane.showConfirmDialog(frame, 
+                    "Do you want to book Flight #" + f.flightId + "?", 
+                    "Confirm Booking", JOptionPane.YES_NO_OPTION);
                 
-                if (confirm == JOptionPane.YES_OPTION) {
-                    this.activeTicket = booking.bookTicket(1001, currentUser.firstname, f, logicClass);
-                    
-                    if (this.activeTicket != null) {
-                        this.lastBookedClass = selectedClass;
-                        db.saveFlights();
-                        JOptionPane.showMessageDialog(frame, "Payment Successful! " + selectedClass + " is confirmed.");
-                        showRoyalHome(); 
+                if (choice == JOptionPane.YES_OPTION) {
+                    if (currentUser == null) {
+                        JOptionPane.showMessageDialog(frame, "Please Sign In / Register first.");
+                        showRegistration();
+                    } else {
+                        showBooking(f);
                     }
                 }
-            } else {
-                JOptionPane.showMessageDialog(frame, "Booking Failed: Route not found.");
-            }
-        });
-        
-        p.add(Box.createVerticalStrut(15));
-        p.add(btn);
-        updateContent(p);
+            });
+            p.add(b);
+            addedFlights.add(fId); 
+        }
+    }
+    
+    
+    p.revalidate();
+    p.repaint();
+    updateContent(p);
+}
+
+  public void showBooking(Flight f) {
+
+    if (currentUser == null) {
+        JOptionPane.showMessageDialog(frame, "Please Sign In / Register to book this flight.");
+        showRegistration();
+        return; 
     }
 
-    public void showCancel() {
-        JPanel p = createRoyalPanel("MY RESERVATIONS");
+    
+    JPanel p = createRoyalPanel("BOOKING: " + f.route.source + " -> " + f.route.destination);
+    
+    updateContent(p);
 
-        if (this.activeTicket != null) {
-            p.add(createLabel("PASSENGER: " + currentUser.firstname));
-            p.add(createLabel("STATUS: PAID & CONFIRMED"));
-            p.add(createLabel("TICKET ID: #1001"));
-            p.add(Box.createVerticalStrut(20));
+    String[] cabins = {"Economy", "Premium Economy", "Business", "First Class"};
+    JComboBox<String> cabinBox = new JComboBox<>(cabins);
+    p.add(new JLabel("Select Cabin Class:"));
+    p.add(cabinBox);
+
+    JPanel seatGrid = new JPanel(new GridLayout(0, 4));
+    p.add(seatGrid);
+
+    cabinBox.addActionListener(e -> {
+        seatGrid.removeAll();
+        String selected = (String) cabinBox.getSelectedItem();
+        
+        
+        int seats;
+        if (selected.equals("First Class")) seats = f.firstClass.availableSeats;
+        else if (selected.equals("Business")) seats = f.businessClass.availableSeats;
+        else if (selected.equals("Premium Economy")) seats = f.premiumEconomy.availableSeats;
+        else seats = f.economy.availableSeats;
+
+        
+        double price;
+        if (selected.equals("First Class")) price = f.firstClassPrice; 
+        else if (selected.equals("Business")) price = f.businessPrice;
+        else if (selected.equals("Business")) price = f.preEcoPrice;
+        else price = f.ecoPrice;
+
+        
+        for (int i = 0; i < seats; i++) {
+            String seatLabel = (i / 4 + 1) + "" + (char)('A' + (i % 4));
+            JButton seatBtn = new JButton(seatLabel);
             
-            JButton btn = createGoldButton("CANCEL RESERVATION");
-            btn.addActionListener(e -> {
-                int originalPrice = 0;
-                
-                
-                if (lastBookedClass.equalsIgnoreCase("First Class")) originalPrice = 25000;
-                else if (lastBookedClass.equalsIgnoreCase("Business")) originalPrice = 12000;
-                else if (lastBookedClass.equalsIgnoreCase("Premium Economy")) originalPrice = 8500;
-                else originalPrice = 6000;
-
-                double refundAmount = originalPrice * 0.8; 
-
+            seatBtn.addActionListener(action -> {
                 int confirm = JOptionPane.showConfirmDialog(frame, 
-                    "Confirm Cancellation?\n" +
-                    "Original Price: " + originalPrice + " Taka\n" +
-                    "Refund (80%): " + refundAmount + " Taka", 
-                    "Refund Policy", JOptionPane.YES_NO_OPTION);
-
+                    "Confirm payment of " + price + " Taka for " + selected + " " + seatLabel + "?", 
+                    "Payment", JOptionPane.YES_NO_OPTION);
+                
                 if (confirm == JOptionPane.YES_OPTION) {
-                    this.activeTicket = null; 
-                    JOptionPane.showMessageDialog(frame, "Reservation Cancelled. " + refundAmount + " Taka refunded.");
-                    showRoyalHome();
+                    myTickets.add(new Ticket(f, seatLabel, selected, currentUser));
+                    seatBtn.setEnabled(false);
+                    
+                    if (selected.equals("First Class")) f.firstClass.availableSeats--;
+                    else if (selected.equals("Business")) f.businessClass.availableSeats--;
+                    else if (selected.equals("Premium Economy")) f.premiumEconomy.availableSeats--;
+                    else f.economy.availableSeats--;
+                    
+                    db.saveFlights(); 
+                    JOptionPane.showMessageDialog(frame, "Booking Successful!");
                 }
             });
-            p.add(btn);
-        } else {
-            p.add(createLabel("No active bookings found."));
+            seatGrid.add(seatBtn);
         }
-        updateContent(p);
+        seatGrid.revalidate();
+        seatGrid.repaint();
+    });
+
+    updateContent(p);
+}
+
+    public void showCancel() {
+    JPanel p = createRoyalPanel("MY RESERVATIONS");
+
+    if (myTickets.isEmpty()) {
+        p.add(createLabel("No bookings found."));
+    } else {
+        for (Ticket t : myTickets) {
+            JPanel ticketRow = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            ticketRow.setBackground(Color.WHITE);
+            
+            ticketRow.setMaximumSize(new Dimension(800, 60)); 
+            
+            JLabel info = new JLabel("Flight #" + t.flight.flightId + " | " + t.cabinClass + " | Seat: " + t.seatNumber);
+            ticketRow.add(info);
+
+            JButton cancelBtn = new JButton("CANCEL");
+            cancelBtn.setBackground(new Color(180, 0, 0));
+            cancelBtn.setForeground(Color.WHITE);
+            
+            cancelBtn.addActionListener(e -> {
+                if (t.cabinClass.equals("First Class")) t.flight.firstClass.availableSeats++;
+                else if (t.cabinClass.equals("Business")) t.flight.businessClass.availableSeats++;
+                else if (t.cabinClass.equals("Premium Economy")) t.flight.premiumEconomy.availableSeats++;
+                else t.flight.economy.availableSeats++;
+                
+                db.saveFlights();
+                myTickets.remove(t);
+                
+                JOptionPane.showMessageDialog(frame, "Booking Cancelled.");
+                showCancel();
+            });
+            
+            ticketRow.add(cancelBtn);
+            p.add(ticketRow);
+        }
     }
+
+    
+    p.add(Box.createVerticalGlue());
+    
+    updateContent(p);
+}
 
     public void showRegistration() {
         JPanel p = createRoyalPanel("MEMBER REGISTRATION");
@@ -234,17 +310,16 @@ public class MainGui {
 
         JButton btn = createGoldButton("JOIN JOY AIRLINES");
         btn.addActionListener(e -> {
-            if(nameF.getText().isEmpty() || idF.getText().isEmpty()) {
-                JOptionPane.showMessageDialog(frame, "Please enter your details.");
-                return;
-            }
-            
-            currentUser = new User(idF.getText(), nameF.getText(), "User", dobF.getText().trim(), passF.getText());
-            fileHelper.saveUser(idF.getText(), nameF.getText(), "User", dobF.getText().trim(), passF.getText());
-            
-            JOptionPane.showMessageDialog(frame, "Welcome, " + nameF.getText() + "! You are now authorized to book.");
-            showRoyalHome();
+        
+        currentUser = new User(idF.getText(), nameF.getText(), "User", dobF.getText(), passF.getText());
+        
+        
+        fileHelper.saveUser(idF.getText(), nameF.getText(), "User", dobF.getText(), passF.getText());
+        
+        JOptionPane.showMessageDialog(frame, "Welcome, " + nameF.getText() + "!");
+        showRoyalHome(); 
         });
+
         p.add(Box.createVerticalStrut(15));
         p.add(btn);
         updateContent(p);
@@ -255,7 +330,7 @@ public class MainGui {
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS)); 
         p.setBackground(Color.WHITE);
         p.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(goldAccent, 2), title, TitledBorder.CENTER, TitledBorder.TOP, menuFont, royalBlue));
-        p.setPreferredSize(new Dimension(450, 450)); 
+        
         return p;
     }
 
@@ -284,18 +359,26 @@ public class MainGui {
     }
 
     private void updateContent(JPanel panel) { 
-        frame.getContentPane().removeAll(); 
-        frame.setLayout(new GridBagLayout()); 
-        frame.add(panel); 
-        frame.revalidate(); 
-        frame.repaint(); 
+    frame.getContentPane().removeAll();
+    
+    
+    panel.setPreferredSize(new Dimension(800, 1200)); 
+    
+    JScrollPane scrollPane = new JScrollPane(panel);
+    
+    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    scrollPane.getVerticalScrollBar().setUnitIncrement(20);
+    
+    frame.add(scrollPane, BorderLayout.CENTER);
+    frame.revalidate();
+    frame.repaint();
+
     }
 
     public static void main(String[] args) { 
         KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(e -> {
         if (e.getID() == java.awt.event.KeyEvent.KEY_PRESSED && e.getKeyCode() == java.awt.event.KeyEvent.VK_ENTER) {
             if (e.getSource() instanceof JTextField) {
-    
                 ((Component) e.getSource()).transferFocus();
                 return true; 
             }
