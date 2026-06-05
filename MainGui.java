@@ -12,13 +12,11 @@ public class MainGui {
     private User currentUser = null;
 
    
-   
-
     private java.util.ArrayList<Ticket> myTickets = new java.util.ArrayList<>();
 
     private JFrame frame = new JFrame("Joy Airlines - Royal Service");
-    
-    // Royal Palette
+
+
     Color royalBlue = new Color(0, 31, 63);   
     Color goldAccent = new Color(196, 160, 82); 
     Color creamWhite = new Color(245, 245, 240); 
@@ -132,55 +130,59 @@ public class MainGui {
 
 
     public void showFlightSearch() {
-    db.loadFlights();
-    JPanel p = createRoyalPanel("ALL AVAILABLE FLIGHTS");
+        db.loadFlights();
+        JPanel p = createRoyalPanel("ALL AVAILABLE FLIGHTS✈️");
 
     
-    p.removeAll();
+        p.removeAll();
 
     
-    java.util.Set<String> addedFlights = new java.util.HashSet<String>();
+        java.util.Set<String> addedFlights = new java.util.HashSet<String>();
 
     
-    java.util.List<Flight> allFlights = new java.util.ArrayList<Flight>();
-    for (Flight f : db.flights) { allFlights.add(f); }
-    allFlights.sort((f1, f2) -> Double.compare(f1.ecoPrice, f2.ecoPrice));
+        java.util.List<Flight> allFlights = new java.util.ArrayList<Flight>();
+    
+        for (Flight f : db.flights) { 
+            allFlights.add(f); }
+        allFlights.sort((f1, f2) -> Double.compare(f1.ecoPrice, f2.ecoPrice));
 
     
-    for (Flight f : allFlights) {
-        String fId = String.valueOf(f.flightId);
+        for (Flight f : allFlights) {
+            String fId = String.valueOf(f.flightId);
         
         
-        if (!addedFlights.contains(fId)) {
-            boolean isCheapest = (f == allFlights.get(0));
-            String labelText = (isCheapest ? "⭐ CHEAPEST: " : "") + 
-                               "Flight #" + f.flightId + " | Price: " + f.ecoPrice + " Taka";
+            if (!addedFlights.contains(fId)) {
+                boolean isCheapest = (f == allFlights.get(0));
+                String labelText = (isCheapest ? " ⭐CHEAPEST: " : "") + 
+                                "Flight #" + f.flightId +" | From "+f.route.source +" To "+f.route.destination
+                                        +"; | Price: " + f.ecoPrice + " Taka";
             
-            JButton b = createGoldButton(labelText);
-            b.addActionListener(e -> {
-                int choice = JOptionPane.showConfirmDialog(frame, 
-                    "Do you want to book Flight #" + f.flightId + "?", 
-                    "Confirm Booking", JOptionPane.YES_NO_OPTION);
+                JButton b = createGoldButton(labelText);
+                b.addActionListener(e -> {
+                    int choice = JOptionPane.showConfirmDialog(frame, 
+                        "Do you want to book Flight #" + f.flightId + " from "+f.route.source+" to "+f.route.destination+"?", 
+                        "Confirm Booking", JOptionPane.YES_NO_OPTION);
                 
-                if (choice == JOptionPane.YES_OPTION) {
-                    if (currentUser == null) {
-                        JOptionPane.showMessageDialog(frame, "Please Sign In / Register first.");
-                        showRegistration();
-                    } else {
-                        showBooking(f);
+                    if (choice == JOptionPane.YES_OPTION) {
+                        if (currentUser == null) {
+                            JOptionPane.showMessageDialog(frame, "Please Sign In / Register first.");
+                            showRegistration();
+                        } 
+                        else {
+                            showBooking(f);
+                        }
                     }
-                }
-            });
-            p.add(b);
-            addedFlights.add(fId); 
+                });
+                p.add(b);
+                addedFlights.add(fId); 
+            }
         }
+    
+    
+            p.revalidate();
+            p.repaint();
+            updateContent(p);
     }
-    
-    
-    p.revalidate();
-    p.repaint();
-    updateContent(p);
-}
 
   public void showBooking(Flight f) {
 
@@ -191,7 +193,7 @@ public class MainGui {
     }
 
     
-    JPanel p = createRoyalPanel("BOOKING: " + f.route.source + " -> " + f.route.destination);
+    JPanel p = createRoyalPanel("BOOKING: " + f.route.source + "🛬 -> " + f.route.destination);
     
     updateContent(p);
 
@@ -248,13 +250,13 @@ public class MainGui {
         }
         seatGrid.revalidate();
         seatGrid.repaint();
-    });
+        });
 
     updateContent(p);
-}
+    }
 
     public void showCancel() {
-    JPanel p = createRoyalPanel("MY RESERVATIONS");
+    JPanel p = createRoyalPanel("MY RESERVATIONS💺");
 
     if (myTickets.isEmpty()) {
         p.add(createLabel("No bookings found."));
@@ -287,14 +289,14 @@ public class MainGui {
             
             ticketRow.add(cancelBtn);
             p.add(ticketRow);
+            }
         }
-    }
 
     
     p.add(Box.createVerticalGlue());
     
     updateContent(p);
-}
+    }
 
     public void showRegistration() {
         JPanel p = createRoyalPanel("MEMBER REGISTRATION");
@@ -316,7 +318,7 @@ public class MainGui {
         
         fileHelper.saveUser(idF.getText(), nameF.getText(), "User", dobF.getText(), passF.getText());
         
-        JOptionPane.showMessageDialog(frame, "Welcome, " + nameF.getText() + "!");
+        JOptionPane.showMessageDialog(frame, "Welcome To Joy Airlines " + nameF.getText() + "! Best Of Luck With Your Journey. Hope You Enjoy Your Flight With Us.");
         showRoyalHome(); 
         });
 

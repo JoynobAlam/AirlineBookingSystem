@@ -48,7 +48,7 @@ public class Main {
         String pass = sc.nextLine();
 
         User user = new User(id, fname, lname, bdate, pass);
-        file.saveUser(id, fname, lname, bdate, pass);//*
+        file.saveUser(id, fname, lname, bdate, pass);
 
         user.showUser();
 
@@ -72,7 +72,7 @@ public class Main {
                     int choice = sc.nextInt();
                     sc.nextLine();
 
-                    // ADD FLIGHT
+                    
                     if (choice == 1) {
 
                         System.out.println("\n===== CREATE FLIGHT =====");
@@ -126,21 +126,21 @@ public class Main {
 
                        
 
-                        db.flights[db.count++] = flight; //* 
+                        db.flights[db.count++] = flight; 
                         db.saveFlights();
 
                         System.out.println("Flight added successfully");
                     }
 
-                    // VIEW FLIGHTS
+                    
                     else if (choice == 2) {
 
-                        for (int i = 0; i < db.count; i++) { //* 
+                        for (int i = 0; i < db.count; i++) { 
                             db.flights[i].displayFlight();
                         }
                     }
 
-                    // EXIT ADMIN
+                    
                     else {
                         System.out.println("Exiting Admin Panel...");
                         break;
@@ -240,7 +240,7 @@ else if (mode.equalsIgnoreCase("user")) {
             System.out.print("Enter Destination: ");
             String d = sc.nextLine();
 
-            // 1. Find the flight
+            
             Flight bestDeal = db.findCheapestOnRoute(s, d);
 
             if (bestDeal != null) {
@@ -259,10 +259,10 @@ else if (mode.equalsIgnoreCase("user")) {
                     int c = sc.next().toUpperCase().charAt(0) - 'A';
                     sc.nextLine();
 
-                    // 2. Calling the booking logic
+                    
                     ticket = booking.bookTicket(1, name, bestDeal, cabin, r, c);
 
-                    // 3. Complete Payment and Save
+                    
                     if (ticket != null) {
                         Payment payment = new Payment(
                             bestDeal.firstClassPrice,
@@ -280,7 +280,7 @@ else if (mode.equalsIgnoreCase("user")) {
             }
         } 
         else if (choice == 6) {
-            break; // Exits User Mode loop
+            break; 
         }
         }
     }
